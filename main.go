@@ -9,8 +9,22 @@ import (
 )
 
 func main() {
-	router := httprouter.New()
-	router.POST("/process", app.Handle)
+	new(App).Init().Run(":8080")
+}
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+// App - struct
+type App struct {
+	router *httprouter.Router
+}
+
+// Init - func
+func (a *App) Init() *App {
+	a.router = httprouter.New()
+	a.router.POST("/process", app.Handle)
+	return a
+}
+
+// Run - func
+func (a *App) Run(address string) {
+	log.Fatal(http.ListenAndServe(address, a.router))
 }
