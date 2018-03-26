@@ -9,11 +9,11 @@ import (
 
 // Processor struct
 type Processor struct {
-	compute func(int) int
+	compute func(int) interface{}
 }
 
 // Comp func
-func (p *Processor) Comp(comp func(int) int) {
+func (p *Processor) Comp(comp func(int) interface{}) {
 	p.compute = comp
 }
 
@@ -41,7 +41,7 @@ func consume(p *Processor, length int, stream chan *interfaces.Record, done chan
 			panic("Missing compute propery")
 		}
 		result := p.compute(client.Iteration)
-		messageBuffer.WriteString(fmt.Sprintf("ID: %s, Iteration: %d - Result: %d %d\n", client.ID, client.Iteration, result, count))
+		messageBuffer.WriteString(fmt.Sprintf("ID: %s, Iteration: %d, Result: %v, Process count: %d\n", client.ID, client.Iteration, result, count))
 
 		if length == count {
 			done <- messageBuffer.String()

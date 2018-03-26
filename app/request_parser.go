@@ -24,12 +24,14 @@ func GetProcessMode(r *http.Request) (string, error) {
 }
 
 // GetProcessor - get processor type from request
-func GetProcessor(r *http.Request) (func(int) int, error) {
+func GetProcessor(r *http.Request) (func(int) interface{}, error) {
 	processor := r.FormValue("processor")
 
 	switch processor {
 	case "fibonacci":
 		return computations.Fibonacci, nil
+	case "isprime":
+		return computations.IsPrime, nil
 	default:
 		return nil, fmt.Errorf("Processor not supported: %s", processor)
 	}
