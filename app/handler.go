@@ -17,6 +17,9 @@ func Handle(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 	content := ReadFileContent(r)
-	fmt.Fprintf(w, "Mode: %s\nContent: %s", mode, content)
+
+	clients := ParseCSV(content)
+
+	fmt.Fprintf(w, "%s", clients)
 	return
 }
