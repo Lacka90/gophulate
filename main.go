@@ -10,7 +10,7 @@ import (
 
 func main() {
 	router := httprouter.New()
-	router.POST("/process", app.Process)
+	router.POST("/process", app.Handle)
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
