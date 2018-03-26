@@ -20,6 +20,8 @@ func Handle(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	clients := ParseCSV(content)
 
-	fmt.Fprintf(w, "%s", clients)
+	message := Process(clients, mode)
+
+	fmt.Fprintf(w, "%s", message)
 	return
 }
