@@ -5,15 +5,14 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+
+	"github.com/Lacka90/gophulate/computations"
 )
 
 // GetProcessMode - get process mode from request
-func GetProcessMode(r *http.Request) string {
-	return r.FormValue("mode")
-}
+func GetProcessMode(r *http.Request) (string, error) {
+	mode := r.FormValue("mode")
 
-// ValidateProcessMode - validating process mode
-func ValidateProcessMode(mode string) (string, error) {
 	switch mode {
 	case "serial":
 	case "parallel":
@@ -22,6 +21,19 @@ func ValidateProcessMode(mode string) (string, error) {
 		return "", fmt.Errorf("Process mode not supported: %s", mode)
 	}
 	return "", nil
+}
+
+// GetProcessor - get processor type from request
+func GetProcessor(r *http.Request) (func(int) int, error) {
+	processor := r.FormValue("processor")
+
+	switch processor {
+	case "fibonacci":
+		return computations.Fibonacci, nil
+	default:
+		return nil, fmt.Errorf("Processor not supported: %s", processor)
+	}
+	return nil, nil
 }
 
 // ReadFileContent - get file content from request
