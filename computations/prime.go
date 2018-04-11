@@ -1,15 +1,17 @@
 package computations
 
-import "math"
+import (
+	"math"
+)
 
 // IsPrime - func
-func IsPrime(value int) interface{} {
-	for i := 2; i <= int(math.Floor(float64(value)/2)); i++ {
-		if value%i == 0 {
+func IsPrime(n int) string {
+	for i := 2; i <= int(math.Floor(float64(n)/2)); i++ {
+		if n%i == 0 {
 			return "false"
 		}
 	}
-	if value > 1 {
+	if n > 1 {
 		return "true"
 	}
 	return "false"
