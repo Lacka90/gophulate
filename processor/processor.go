@@ -19,45 +19,50 @@ func (p *Processor) Comp(comp func(int) interface{}) {
 
 // Process - process parsed records
 func (p *Processor) Process(clients []*interfaces.Record, mode string) string {
-	var stream = make(chan *interfaces.Record)
 	var done = make(chan string)
+	var progress = make(chan string)
 
-	go consume(p, len(clients), stream, done)
+	go listen(progress, done, len(clients))
 
-	produce(stream, clients, mode)
+	produce(p, clients, progress, mode)
 
 	message := <-done
 
 	return message
 }
 
-func consume(p *Processor, length int, stream chan *interfaces.Record, done chan string) {
-	count := 0
-	var messageBuffer bytes.Buffer
-	for {
-		client := <-stream
-		count++
-		if p.compute == nil {
-			panic("Missing compute propery")
-		}
-		result := p.compute(client.Iteration)
-		messageBuffer.WriteString(fmt.Sprintf("ID: %s, Iteration: %d, Result: %v, Process count: %d\n", client.ID, client.Iteration, result, count))
-
-		if length == count {
-			done <- messageBuffer.String()
+func produce(p *Processor, clients []*interfaces.Record, progress chan string, mode string) {
+	for i := range clients {
+		value := clients[i]
+		if mode == "parallel" {
+			go consume(p, value, progress)
+		} else {
+			consume(p, value, progress)
 		}
 	}
 }
 
-func produce(stream chan *interfaces.Record, clients []*interfaces.Record, mode string) {
-	for i := range clients {
-		val := clients[i]
-		if mode == "parallel" {
-			go func() {
-				stream <- val
-			}()
-		} else {
-			stream <- val
+func consume(p *Processor, client *interfaces.Record, progress chan string) {
+	if p.compute == nil {
+		panic("Missing compute propery")
+	}
+
+	result := p.compute(client.Iteration)
+	message := fmt.Sprintf("ID: %s, Iteration: %d, Result: %v\n", client.ID, client.Iteration, result)
+
+	progress <- message
+}
+
+func listen(progress chan string, done chan string, length int) {
+	count := 0
+	var messageBuffer bytes.Buffer
+	for {
+		message := <-progress
+		messageBuffer.WriteString(message)
+		count++
+
+		if count == length {
+			done <- messageBuffer.String()
 		}
 	}
 }
