@@ -9,11 +9,11 @@ import (
 
 // Processor struct
 type Processor struct {
-	compute func(int) interface{}
+	compute func(int) string
 }
 
 // Comp func
-func (p *Processor) Comp(comp func(int) interface{}) {
+func (p *Processor) Comp(comp func(int) string) {
 	p.compute = comp
 }
 

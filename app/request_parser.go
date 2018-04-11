@@ -24,7 +24,7 @@ func GetProcessMode(r *http.Request) (string, error) {
 }
 
 // GetProcessor - get processor type from request
-func GetProcessor(r *http.Request) (func(int) interface{}, error) {
+func GetProcessor(r *http.Request) (func(int) string, error) {
 	processor := r.FormValue("processor")
 
 	switch processor {
